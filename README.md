@@ -14,7 +14,7 @@ bash fetchbuild.sh $REPO $COMMIT $TOOLCHAIN $TARGETHOST $BITS
 ```
 
 ### Get bitcoin-cli
-Build sources of bitcoin_ndk enabling bitcoin tools [apply diff commit](https://github.com/lvaccaro/bitcoin_ndk/commit/35b63e11ed6efc9d9dbc787759fd0e8b0b8311f4) for the same platform.
+Build sources of bitcoin_ndk for the same platform enabling bitcoin tools, [diff commit for enabling build tools](https://github.com/lvaccaro/bitcoin_ndk/commit/35b63e11ed6efc9d9dbc787759fd0e8b0b8311f4).
 
 
 ### Push to the device
