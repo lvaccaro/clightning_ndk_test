@@ -66,20 +66,9 @@ sed -i -e 's/-Wno-maybe-uninitialized/-Wno-uninitialized/g' configure
 ./configure CONFIGURATOR_CC=/usr/bin/gcc --prefix=${QEMU_LD_PREFIX} --disable-developer --disable-compat --disable-valgrind --enable-static
 
 # change settings
-export CONFIG_VAR_FILE=config.vars
-export CONFIG_HEADER=ccan/config.h
-
-sed -i -e 's/HAVE_SYS_TERMIOS_H=1/HAVE_SYS_TERMIOS_H=0/g' $CONFIG_VAR_FILE
-sed -i -e 's/HAVE_GOOD_LIBSODIUM=1/HAVE_GOOD_LIBSODIUM=0/g' $CONFIG_VAR_FILE
-sed -i -e 's/HAVE_SQLITE3=0/HAVE_SQLITE3=1/g' $CONFIG_VAR_FILE
-sed -i -e 's/HAVE_BACKTRACE=1/HAVE_BACKTRACE=0/g' $CONFIG_VAR_FILE
-sed -i -e 's/HAVE_QSORT_R_PRIVATE_LAST=1/HAVE_QSORT_R_PRIVATE_LAST=0/g' $CONFIG_VAR_FILE
-
-sed -i -e 's/HAVE_SYS_TERMIOS_H 1/HAVE_SYS_TERMIOS_H 0/g' $CONFIG_HEADER
-sed -i -e 's/HAVE_GOOD_LIBSODIUM 1/HAVE_GOOD_LIBSODIUM 0/g' $CONFIG_HEADER
-sed -i -e 's/HAVE_SQLITE3 0/HAVE_SQLITE3 1/g' $CONFIG_HEADER
-sed -i -e 's/HAVE_BACKTRACE 1/HAVE_BACKTRACE 0/g' $CONFIG_HEADER
-sed -i -e 's/HAVE_QSORT_R_PRIVATE_LAST 1/HAVE_QSORT_R_PRIVATE_LAST 0/g' $CONFIG_HEADER
+wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/config.vars
+wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/ccan/config.h
+mv config.h ccan/config.h
 
 # patch makefile
 wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/Makefile.patch
@@ -89,16 +78,16 @@ git apply Makefile.patch
 wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/jsonrpc.patch
 git apply jsonrpc.patch
 
+# copy the a pregenerated gen header version
+wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/gen_header_versions.h
+
 # build external libraries and source before ccan tools
 make PIE=1 DEVELOPER=0 || echo "continue"
 
 # build ccan tools for the host machine
-sed -i -e 's/"ccan_compat.h"/"..\/ccan_compat.h"/g' ccan/config.h
+#sed -i -e 's/"ccan_compat.h"/"..\/ccan_compat.h"/g' ccan/config.h
 make clean -C ccan/ccan/cdump/tools
 make LDFLAGS="" CC="${CONFIGURATOR_CC}" LDLIBS="-L/usr/local/lib" -C ccan/ccan/cdump/tools
-
-# copy the a pregenerated gen header version
-wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/gen_header_versions.h
 
 # complete the build process
 make PIE=1 DEVELOPER=0 || echo "continue"
