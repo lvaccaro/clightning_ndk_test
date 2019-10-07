@@ -1,0 +1,14 @@
+diff --git a/lightningd/jsonrpc.c b/lightningd/jsonrpc.c
+index c5c7fa7d..49fa52db 100644
+--- a/lightningd/jsonrpc.c
++++ b/lightningd/jsonrpc.c
+@@ -945,7 +945,8 @@ void jsonrpc_listen(struct jsonrpc *jsonrpc, struct lightningd *ld)
+ 	}
+ 	if (strlen(rpc_filename) + 1 > sizeof(addr.sun_path))
+ 		errx(1, "rpc filename '%s' too long", rpc_filename);
+-	strcpy(addr.sun_path, rpc_filename);
++	addr.sun_path[0] = '\0';
++	strcpy(addr.sun_path + 1, rpc_filename);
+ 	addr.sun_family = AF_UNIX;
+ 
+ 	/* Of course, this is racy! */

@@ -85,6 +85,10 @@ sed -i -e 's/HAVE_QSORT_R_PRIVATE_LAST 1/HAVE_QSORT_R_PRIVATE_LAST 0/g' $CONFIG_
 wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/Makefile.patch
 git apply Makefile.patch
 
+# patch abstracted namespace for socket
+wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/jsonrpc.patch
+git apply jsonrpc.patch
+
 # build external libraries and source before ccan tools
 make PIE=1 DEVELOPER=0 || echo "continue"
 
