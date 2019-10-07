@@ -6,7 +6,7 @@ Android cross-compilation of [c-lightning](https://github.com/ElementsProject/li
 ```bash
 bash build_deps.sh
 export REPO=https://github.com/ElementsProject/lightning.git
-export COMMIT=v0.7.2
+export COMMIT=a4204226b46a31b3eb637967fb5c18d87d1cd9bb
 export TOOLCHAIN=aarch64-linux-android-clang
 export TARGETHOST=aarch64-linux-android
 export BITS=64
