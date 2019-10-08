@@ -1,6 +1,9 @@
 # clightning_ndk
 
+
 Android cross-compilation of [c-lightning](https://github.com/ElementsProject/lightning) for Android >= 24 Api.
+
+Build status: [![Build Status](https://travis-ci.com/lvaccaro/clightning_ndk.svg?branch=master)](https://travis-ci.com/lvaccaro/clightning_ndk)
 
 ### Build
 ```bash
