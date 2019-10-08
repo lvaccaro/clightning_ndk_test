@@ -13,7 +13,7 @@ export COMMIT=a4204226b46a31b3eb637967fb5c18d87d1cd9bb
 export TOOLCHAIN=aarch64-linux-android-clang
 export TARGETHOST=aarch64-linux-android
 export BITS=64
-bash fetchbuild.sh $REPO $COMMIT $TOOLCHAIN $TARGETHOST $BITS
+bash fetchbuild.sh $REPO $COMMIT $TOOLCHAIN $TARGETHOST $BITS $PWD
 ```
 
 ### Get bitcoin-cli

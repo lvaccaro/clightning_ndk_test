@@ -6,6 +6,7 @@ commit=$2
 toolchain=$3
 target_host=$4
 bits=$5
+rootdir=$6
 
 export PATH=/opt/$toolchain/bin:${PATH}
 export AR=$target_host-ar
@@ -66,15 +67,15 @@ sed -i -e 's/-Wno-maybe-uninitialized/-Wno-uninitialized/g' configure
 ./configure CONFIGURATOR_CC=/usr/bin/gcc --prefix=${QEMU_LD_PREFIX} --disable-developer --disable-compat --disable-valgrind --enable-static
 
 # change settings
-cp /repo/config.vars .
-cp /repo/config.h ./ccan
-cp /repo/gen_header_versions.h .
+cp ${rootdir}/config.vars .
+cp ${rootdir}/config.h ./ccan
+cp ${rootdir}/gen_header_versions.h .
 
 # patch makefile
-git apply /repo/Makefile.patch
+git apply ${rootdir}/Makefile.patch
 
 # patch abstracted namespace for socket
-git apply /repo/jsonrpc.patch
+git apply ${rootdir}/jsonrpc.patch
 
 # build external libraries and source before ccan tools
 make PIE=1 DEVELOPER=0 || echo "continue"
