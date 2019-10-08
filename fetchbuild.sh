@@ -66,20 +66,15 @@ sed -i -e 's/-Wno-maybe-uninitialized/-Wno-uninitialized/g' configure
 ./configure CONFIGURATOR_CC=/usr/bin/gcc --prefix=${QEMU_LD_PREFIX} --disable-developer --disable-compat --disable-valgrind --enable-static
 
 # change settings
-wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/config.vars
-wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/ccan/config.h
-mv config.h ccan/config.h
+cp /repo/config.vars .
+cp /repo/config.h ./ccan
+cp /repo/gen_header_versions.h .
 
 # patch makefile
-wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/Makefile.patch
-git apply Makefile.patch
+git apply /repo/Makefile.patch
 
 # patch abstracted namespace for socket
-wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/jsonrpc.patch
-git apply jsonrpc.patch
-
-# copy the a pregenerated gen header version
-wget https://raw.githubusercontent.com/lvaccaro/clightning_ndk/master/gen_header_versions.h
+git apply /repo/jsonrpc.patch
 
 # build external libraries and source before ccan tools
 make PIE=1 DEVELOPER=0 || echo "continue"
