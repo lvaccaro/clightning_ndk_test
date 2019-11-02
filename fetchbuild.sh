@@ -77,6 +77,9 @@ git apply ${rootdir}/Makefile.patch
 # patch abstracted namespace for socket
 git apply ${rootdir}/jsonrpc.patch
 
+# patch endian.h if just defined
+git apply ${rootdir}/endian.patch
+
 # build external libraries and source before ccan tools
 make PIE=1 DEVELOPER=0 || echo "continue"
 
