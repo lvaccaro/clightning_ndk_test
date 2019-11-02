@@ -23,12 +23,16 @@ Build sources of bitcoin_ndk for the same platform enabling bitcoin tools, [diff
 ### Push to the device
 ```bash
 adb push lightningd/lightningd /data/local/tmp/
+adb push lightningd/lightning_channeld /data/local/tmp/
 adb push lightningd/lightning_closingd /data/local/tmp/
 adb push lightningd/lightning_connectd /data/local/tmp/
 adb push lightningd/lightning_gossipd /data/local/tmp/
 adb push lightningd/lightning_hsmd /data/local/tmp/
 adb push lightningd/lightning_onchaind /data/local/tmp/
 adb push lightningd/lightning_openingd /data/local/tmp/
+adb push lightningd/plugins/autoclean /data/local/tmp/plugins/
+adb push lightningd/plugins/fundchannel /data/local/tmp/plugins/
+adb push lightningd/plugins/pay /data/local/tmp/plugins/
 adb push bitcoin-cli /data/local/tmp/
 ```
 
@@ -37,7 +41,7 @@ adb push bitcoin-cli /data/local/tmp/
 adb shell
 cd /data/local/tmp
 chmod +x *
-./lightningd --lightning-dir=/sdcard/tmp/ --testnet --bitcoin-rpcconnect=*** --bitcoin-rpcuser=*** --bitcoin-rpcpassword=*** --bitcoin-rpcport=18332 --bitcoin-cli=/data/local/tmp/bitcoin-cli --bitcoin-datadir=/sdcard/tmp/ --log-level=debug
+./lightningd --lightning-dir=/sdcard/tmp/ --testnet --bitcoin-rpcconnect=*** --bitcoin-rpcuser=*** --bitcoin-rpcpassword=*** --bitcoin-rpcport=18332 --bitcoin-cli=/data/local/tmp/bitcoin-cli --bitcoin-datadir=/sdcard/tmp/ --plugin-dir=/data/local/tmp/plugins --log-level=debug
 ```
 
 ### Dependencies
