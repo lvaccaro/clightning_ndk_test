@@ -89,10 +89,6 @@ make clean -C ccan/ccan/cdump/tools
 make LDFLAGS="" CC="${CONFIGURATOR_CC}" LDLIBS="-L/usr/local/lib" -C ccan/ccan/cdump/tools
 
 # complete the build process
-make PIE=1 DEVELOPER=0 || echo "continue"
-
-# rebuild tools and rerun
-make LDFLAGS="" CC="${CONFIGURATOR_CC}" LDLIBS="-L/usr/local/lib" -C ccan/ccan/cdump/tools
 make PIE=1 DEVELOPER=0
 
 #exit from lightning build system

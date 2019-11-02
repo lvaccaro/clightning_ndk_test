@@ -1,21 +1,24 @@
 diff --git a/Makefile b/Makefile
-index 6e05ee20..33d0dad7 100644
+index 7c19a5d6..eb72e8d6 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -189,16 +189,16 @@ BOLT_DEPS := $(BOLT_GEN)
+@@ -189,19 +189,19 @@ BOLT_DEPS := $(BOLT_GEN)
  ALL_PROGRAMS =
  
  CPPFLAGS += -DBINTOPKGLIBEXECDIR="\"$(shell sh tools/rel.sh $(bindir) $(pkglibexecdir))\""
--CFLAGS = $(CPPFLAGS) $(CWARNFLAGS) $(CDEBUGFLAGS) $(COPTFLAGS) -I $(CCANDIR) $(EXTERNAL_INCLUDE_FLAGS) -I . -I/usr/local/include $(FEATURES) $(COVFLAGS) $(DEV_CFLAGS) -DSHACHAIN_BITS=48 -DJSMN_PARENT_LINKS $(PIE_CFLAGS) $(COMPAT_CFLAGS)
-+CFLAGS = $(CPPFLAGS) $(CWARNFLAGS) $(CDEBUGFLAGS) $(COPTFLAGS) -I $(CCANDIR) $(EXTERNAL_INCLUDE_FLAGS) -I . -I$(PREFIX)/include $(FEATURES) $(COVFLAGS) $(DEV_CFLAGS) -DSHACHAIN_BITS=48 -DJSMN_PARENT_LINKS $(PIE_CFLAGS) $(COMPAT_CFLAGS)
+-CFLAGS = $(CPPFLAGS) $(CWARNFLAGS) $(CDEBUGFLAGS) $(COPTFLAGS) -I $(CCANDIR) $(EXTERNAL_INCLUDE_FLAGS) -I . -I/usr/local/include $(FEATURES) $(COVFLAGS) $(DEV_CFLAGS) -DSHACHAIN_BITS=48 -DJSMN_PARENT_LINKS $(PIE_CFLAGS) $(COMPAT_CFLAGS) -DBUILD_ELEMENTS=1
++CFLAGS = $(CPPFLAGS) $(CWARNFLAGS) $(CDEBUGFLAGS) $(COPTFLAGS) -I $(CCANDIR) $(EXTERNAL_INCLUDE_FLAGS) -I . -I$(PREFIX)/include $(FEATURES) $(COVFLAGS) $(DEV_CFLAGS) -DSHACHAIN_BITS=48 -DJSMN_PARENT_LINKS $(PIE_CFLAGS) $(COMPAT_CFLAGS) -DBUILD_ELEMENTS=1
  
  # We can get configurator to run a different compile cmd to cross-configure.
 -CONFIGURATOR_CC := $(CC)
-+# CONFIGURATOR_CC := $(CC)
++#CONFIGURATOR_CC := $(CC)
  
  LDFLAGS += $(PIE_LDFLAGS) $(SANITIZER_FLAGS) $(COPTFLAGS)
  ifeq ($(STATIC),1)
--LDLIBS = -L/usr/local/lib -Wl,-lgmp -lsqlite3 -lz -Wl,-lm -lpthread -ldl $(COVFLAGS)
+ # For MacOS, Jacob Rapoport <jacob@rumblemonkey.com> changed this to:
+ #  -L/usr/local/lib -Wl,-lgmp -lsqlite3 -lz -Wl,-lm -lpthread -ldl $(COVFLAGS)
+ # But that doesn't static link.
+-LDLIBS = -L/usr/local/lib -Wl,-dn -lgmp -lsqlite3 -lz -Wl,-dy -lm -lpthread -ldl $(COVFLAGS)
 +LDLIBS = -L$(PREFIX)/lib -Wl,-dn -lgmp -lsqlite3 -lz -Wl,-dy -lm -ldl $(COVFLAGS)
  else
 -LDLIBS = -L/usr/local/lib -lm -lgmp -lsqlite3 -lz $(COVFLAGS)
@@ -23,7 +26,7 @@ index 6e05ee20..33d0dad7 100644
  endif
  
  # If we have the postgres client library we need to link against it as well
-@@ -379,7 +379,7 @@ gen_header_versions.h: tools/headerversions
+@@ -382,7 +382,7 @@ gen_header_versions.h: tools/headerversions
  	@tools/headerversions $@
  
  # Rebuild the world if this changes.
@@ -32,7 +35,7 @@ index 6e05ee20..33d0dad7 100644
  
  # All binaries require the external libs, ccan and system library versions.
  $(ALL_PROGRAMS) $(ALL_TEST_PROGRAMS): $(EXTERNAL_LIBS) $(CCAN_OBJS)
-@@ -430,7 +430,7 @@ clean:
+@@ -433,7 +433,7 @@ clean:
  	$(RM) $(ALL_PROGRAMS) $(ALL_PROGRAMS:=.o)
  	$(RM) $(ALL_TEST_PROGRAMS) $(ALL_TEST_PROGRAMS:=.o)
  	$(RM) gen_*.h ccan/tools/configurator/configurator
@@ -51,20 +54,3 @@ index 33dc5f7c..90e67cde 100644
  
 -include bitcoin/test/Makefile
 +#include bitcoin/test/Makefile
-diff --git a/ccan/ccan/endian/endian.h b/ccan/ccan/endian/endian.h
-index 3753f490..6e9d8046 100644
---- a/ccan/ccan/endian/endian.h
-+++ b/ccan/ccan/endian/endian.h
-@@ -104,8 +104,12 @@ static inline uint64_t bswap_64(uint64_t val)
- #endif
- 
- /* Needed for Glibc like endiness check */
-+#ifndef __LITTLE_ENDIAN
- #define	__LITTLE_ENDIAN	1234
-+#endif
-+#ifndef __BIG_ENDIAN
- #define	__BIG_ENDIAN	4321
-+#endif
- 
- /* Sanity check the defines.  We don't handle weird endianness. */
- #if !HAVE_LITTLE_ENDIAN && !HAVE_BIG_ENDIAN

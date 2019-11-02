@@ -8,7 +8,7 @@ services:
 env:
  global:
   - REPO=https://github.com/ElementsProject/lightning.git
-  - COMMIT=a4204226b46a31b3eb637967fb5c18d87d1cd9bb
+  - COMMIT=v0.7.3
   - TOOLCHAIN=aarch64-linux-android-clang
   - TARGETHOST=aarch64-linux-android
   - BITS=64

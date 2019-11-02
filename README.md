@@ -9,7 +9,7 @@ Build status: [![Build Status](https://travis-ci.com/lvaccaro/clightning_ndk.svg
 ```bash
 bash build_deps.sh
 export REPO=https://github.com/ElementsProject/lightning.git
-export COMMIT=a4204226b46a31b3eb637967fb5c18d87d1cd9bb
+export COMMIT=v0.7.3
 export TOOLCHAIN=aarch64-linux-android-clang
 export TARGETHOST=aarch64-linux-android
 export BITS=64
