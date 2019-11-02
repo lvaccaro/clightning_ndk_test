@@ -30,9 +30,9 @@ adb push lightningd/lightning_gossipd /data/local/tmp/
 adb push lightningd/lightning_hsmd /data/local/tmp/
 adb push lightningd/lightning_onchaind /data/local/tmp/
 adb push lightningd/lightning_openingd /data/local/tmp/
-adb push lightningd/plugins/autoclean /data/local/tmp/plugins/
-adb push lightningd/plugins/fundchannel /data/local/tmp/plugins/
-adb push lightningd/plugins/pay /data/local/tmp/plugins/
+adb push plugins/autoclean /data/local/tmp/plugins/
+adb push plugins/fundchannel /data/local/tmp/plugins/
+adb push plugins/pay /data/local/tmp/plugins/
 adb push bitcoin-cli /data/local/tmp/
 ```
 
