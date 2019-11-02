@@ -97,4 +97,7 @@ cd ..
 
 # pack binaries
 export repo_name="${HOST}-lightning"
-tar -C lightning/lightningd -czf ${repo_name}.tar.gz lightning_channeld lightning_closingd lightning_connectd lightning_gossipd lightning_hsmd lightning_onchaind lightning_openingd lightningd
+tar -C lightning/lightningd -cf ${repo_name}.tar lightning_channeld lightning_closingd lightning_connectd lightning_gossipd lightning_hsmd lightning_onchaind lightning_openingd lightningd
+tar -C lightning/ -rf ${repo_name}.tar plugins/autoclean plugins/fundchannel plugins/pay
+tar -C lightning/cli/ -rf ${repo_name}.tar lightning-cli
+xz ${repo_name}.tar
