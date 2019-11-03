@@ -45,3 +45,25 @@ index c5c7fa7d..9de8d8c4 100644
  		err(1, "Binding rpc socket to '%s'", rpc_filename);
  	umask(old_umask);
  
+diff --git a/plugins/libplugin.c b/plugins/libplugin.c
+index 7461f2a7..6c85156b 100644
+--- a/plugins/libplugin.c
++++ b/plugins/libplugin.c
+@@ -550,11 +550,14 @@ static struct command_result *handle_init(struct command *init_cmd,
+ 		plugin_err("rpc filename '%.*s' too long",
+ 			   rpctok->end - rpctok->start,
+ 			   buf + rpctok->start);
+-	memcpy(addr.sun_path, buf + rpctok->start, rpctok->end - rpctok->start);
+-	addr.sun_path[rpctok->end - rpctok->start] = '\0';
++
++	memcpy(addr.sun_path + 1, buf + rpctok->start, rpctok->end - rpctok->start);
++	addr.sun_path[0] = '\0';
++	addr.sun_path[rpctok->end - rpctok->start + 1] = '\0';
+ 	addr.sun_family = AF_UNIX;
+ 
+-	if (connect(rpc_conn.fd, (struct sockaddr *)&addr, sizeof(addr)) != 0)
++	const size_t len = sizeof(addr.sun_family) + (rpctok->end - rpctok->start) + 1;
++	if (connect(rpc_conn.fd, (struct sockaddr *)&addr, len) != 0)
+ 		plugin_err("Connecting to '%.*s': %s",
+ 			   rpctok->end - rpctok->start, buf + rpctok->start,
+ 			   strerror(errno));
