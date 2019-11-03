@@ -5,7 +5,15 @@ Android cross-compilation of [c-lightning](https://github.com/ElementsProject/li
 
 Build status: [![Build Status](https://travis-ci.com/lvaccaro/clightning_ndk.svg?branch=master)](https://travis-ci.com/lvaccaro/clightning_ndk)
 
-### Build
+
+### Get binaries
+Download the artifacts from the latest github tagged release.
+
+The package `<host>_lightning.tar.xz` contains: ligthning deamons, ligthning default plugins, `ligthning-cli` and `bitcoin-cli`.
+
+### Build from sources
+To build c-lightning follow the following instructions:
+
 ```bash
 bash build_deps.sh
 export REPO=https://github.com/ElementsProject/lightning.git
@@ -16,11 +24,17 @@ export BITS=64
 bash fetchbuild.sh $REPO $COMMIT $TOOLCHAIN $TARGETHOST $BITS $PWD
 ```
 
-### Get bitcoin-cli
-Build sources of bitcoin_ndk for the same platform enabling bitcoin tools, [diff commit for enabling build tools](https://github.com/lvaccaro/bitcoin_ndk/commit/35b63e11ed6efc9d9dbc787759fd0e8b0b8311f4).
+Note:
 
+- `build_deps.sh`: download android ndk toolchain
+- `fetchbuild.sh`: download and build sqlite, gmplib and c-lightning
+- `<host>-lightning.tar.xz`: the generated archive contains the binary
+
+To build `bitcoin-cli` from sources, compile bitcoin_ndk enabling bitcoin tools, [diff commit for enabling build tools](https://github.com/lvaccaro/bitcoin_ndk/commit/35b63e11ed6efc9d9dbc787759fd0e8b0b8311f4).
 
 ### Push to the device
+Push all the binary to the android device, using `/data/local/tmp/``for testing
+
 ```bash
 adb push lightningd/lightningd /data/local/tmp/
 adb push lightningd/lightning_channeld /data/local/tmp/
@@ -37,11 +51,20 @@ adb push bitcoin-cli /data/local/tmp/
 ```
 
 ### Run on the device
+Connect to adb and run the `lightningd` deamon
+
 ```bash
 adb shell
 cd /data/local/tmp
 chmod +x *
 ./lightningd --lightning-dir=/sdcard/tmp/ --testnet --bitcoin-rpcconnect=*** --bitcoin-rpcuser=*** --bitcoin-rpcpassword=*** --bitcoin-rpcport=18332 --bitcoin-cli=/data/local/tmp/bitcoin-cli --bitcoin-datadir=/sdcard/tmp/ --plugin-dir=/data/local/tmp/plugins --log-level=debug
+```
+
+### Local testing
+Run cli command in an adb shell, as the following
+
+```bash
+./lightning-cli --lightning-dir=/sdcard/tmp/  newaddr
 ```
 
 ### Dependencies
