@@ -77,3 +77,6 @@ Run cli command in an adb shell, as the following
 * [INSTALL.md](https://github.com/ElementsProject/lightning/blob/master/doc/INSTALL.md#to-cross-compile-for-android)  of clightning to cross-compile c-lightning for Android
 * [bitcoin_ndk](https://github.com/greenaddress/bitcoin_ndk/): ndk build of bitcoin core, knots and liquid
 * [abcore](https://github.com/greenaddress/abcore/): ABCore - Android Bitcoin Core
+
+### Acknowledgement
+Thanks [domegabri](https://github.com/domegabri) to test this project on Android devices, and [dieeasy](https://github.com/dieeasy) from inbitcoin to test channels and pay invoices with [globular](https://gitlab.com/inbitcoin/globular).
