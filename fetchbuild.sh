@@ -80,7 +80,7 @@ cp ${rootdir}/config.h ./ccan
 cp ${rootdir}/gen_header_versions.h .
 
 # update arch based on toolchain
-sed -i -e 's/#define CCAN_COMPILER "aarch64-linux-android-clang"/#define CCAN_COMPILER "'${toolchain}'"/g' ./ccan/config.
+sed -i -e 's/#define CCAN_COMPILER "aarch64-linux-android-clang"/#define CCAN_COMPILER "'${toolchain}'"/g' ./ccan/config.h
 sed -i -e 's/PREFIX=\/opt\/aarch64-linux-android-clang\/sysroot/PREFIX=\/opt\/'${toolchain}'\/sysroot/g' ./config.vars
 sed -i -e 's/CC=aarch64-linux-android-clang/CC='${toolchain}'/g' ./config.vars
 
