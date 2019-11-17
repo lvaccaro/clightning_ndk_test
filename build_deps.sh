@@ -15,8 +15,4 @@ curl -sSO https://dl.google.com/android/repository/${NDK_FILENAME}
 unzip -qq ${NDK_FILENAME}
 rm ${NDK_FILENAME}
 
-/opt/${NDK_VERSION}/build/tools/make-standalone-toolchain.sh --use-llvm --stl=libc++ --platform=26 --toolchain=arm-linux-androideabi-clang --install-dir=/opt/arm-linux-androideabi-clang
-/opt/${NDK_VERSION}/build/tools/make-standalone-toolchain.sh --use-llvm --stl=libc++ --platform=26 --toolchain=x86-clang --install-dir=/opt/x86-clang
-/opt/${NDK_VERSION}/build/tools/make-standalone-toolchain.sh --use-llvm --stl=libc++ --platform=26 --toolchain=x86_64-clang --install-dir=/opt/x86_64-clang
-/opt/${NDK_VERSION}/build/tools/make-standalone-toolchain.sh --use-llvm --stl=libc++ --platform=26 --toolchain=aarch64-linux-android-clang --install-dir=/opt/aarch64-linux-android-clang
-
+/opt/${NDK_VERSION}/build/tools/make-standalone-toolchain.sh --use-llvm --stl=libc++ --platform=26 --install-dir=/opt/toolchain

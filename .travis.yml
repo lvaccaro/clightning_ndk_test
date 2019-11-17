@@ -9,9 +9,15 @@ env:
  global:
   - REPO=https://github.com/ElementsProject/lightning.git
   - COMMIT=v0.7.3
-  - TOOLCHAIN=aarch64-linux-android-clang
   - TARGETHOST=aarch64-linux-android
   - BITS=64
+  - BUILD=aarch64
+
+ matrix:
+  - unused=true
+  - TARGETHOST=arm-linux-androideabi BUILD=arm BITS=32
+  - TARGETHOST=x86_64-linux-android BUILD=x86_64
+  - TARGETHOST=i686-linux-android BUILD=i686 BITS=32
 
 script:
-  - docker run -v $PWD:/repo debian:buster@sha256:2f04d3d33b6027bb74ecc81397abe780649ec89f1a2af18d7022737d0482cefe /bin/bash -c "sh /repo/build_deps.sh && sh /repo/fetchbuild.sh $REPO $COMMIT $TOOLCHAIN $TARGETHOST $BITS /repo"
+  - docker run -v $PWD:/repo debian:buster@sha256:2f04d3d33b6027bb74ecc81397abe780649ec89f1a2af18d7022737d0482cefe /bin/bash -c "sh /repo/build_deps.sh && sh /repo/fetchbuild.sh $REPO $COMMIT $TARGETHOST $BITS $BUILD /repo"

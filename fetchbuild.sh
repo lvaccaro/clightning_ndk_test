@@ -3,24 +3,29 @@ set -e
 
 repo=$1
 commit=$2
-toolchain=$3
-target_host=$4
-bits=$5
+target_host=$3
+bits=$4
+build=$5
 rootdir=$6
 
-export PATH=/opt/$toolchain/bin:${PATH}
-export AR=$target_host-ar
-export AS=$target_host-clang
-export CC=$target_host-clang
-export CXX=$target_host-clang++
-export LD=$target_host-ld
-export STRIP=$target_host-strip
+export PATH=/opt/toolchain/bin:${PATH}
+export AR=${target_host}-ar
+export AS=${target_host}-as
+export CC=${target_host}26-clang
+export CXX=${target_host}26-clang++
+export LD=${target_host}-ld
+export STRIP=${target_host}-strip
 export LDFLAGS="-pie"
-export BUILD=aarch64
-export MAKE_HOST=$target_host
-export HOST=$target_host
-export QEMU_LD_PREFIX=/opt/${toolchain}/sysroot
+export MAKE_HOST=${target_host}
+export HOST=${target_host}
+export QEMU_LD_PREFIX=/opt/toolchain/sysroot
 export CONFIGURATOR_CC="/usr/bin/gcc"
+export BUILD=${build}
+
+if [ "${target_host}" = "arm-linux-androideabi" ]; then
+    CC="armv7a-linux-androideabi26-clang"
+    CXX="armv7a-linux-androideabi26-clang"
+fi
 
 num_jobs=4
 if [ -f /proc/cpuinfo ]; then
@@ -70,6 +75,11 @@ sed -i -e 's/-Wno-maybe-uninitialized/-Wno-uninitialized/g' configure
 cp ${rootdir}/config.vars .
 cp ${rootdir}/config.h ./ccan
 cp ${rootdir}/gen_header_versions.h .
+
+# update arch based on toolchain
+sed -i -e 's/PREFIX=\/opt\/toolchain\/aarch64-linux-android-clang\/sysroot/PREFIX=\/opt\/toolchain\/sysroot/g' ./config.vars
+sed -i -e 's/CC=aarch64-linux-android-clang/CC='${CC}'/g' ./config.vars
+sed -i -e 's/#define CCAN_COMPILER "aarch64-linux-android-clang"/#define CCAN_COMPILER "'${CC}'"/g' ./ccan/config.h
 
 # patch makefile
 git apply ${rootdir}/Makefile.patch

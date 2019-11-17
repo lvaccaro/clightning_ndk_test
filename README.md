@@ -18,10 +18,10 @@ To build c-lightning follow the following instructions:
 bash build_deps.sh
 export REPO=https://github.com/ElementsProject/lightning.git
 export COMMIT=v0.7.3
-export TOOLCHAIN=aarch64-linux-android-clang
 export TARGETHOST=aarch64-linux-android
 export BITS=64
-bash fetchbuild.sh $REPO $COMMIT $TOOLCHAIN $TARGETHOST $BITS $PWD
+export BUILD=aarch64
+bash fetchbuild.sh $REPO $COMMIT $TARGETHOST $BITS $BUILD $PWD
 ```
 
 Note:
