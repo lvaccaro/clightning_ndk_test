@@ -57,7 +57,7 @@ rm -rf gmp-6.1.2.tar.bz2
 # download lightning
 git clone $repo lightning
 cd lightning
-git checkout $commit
+git checkout v0.8.1
 
 # set virtualenv
 python3 -m virtualenv venv
@@ -65,8 +65,36 @@ python3 -m virtualenv venv
 pip install -r requirements.txt
 
 # set standard cc for the configurator
-sed -i -e 's/$CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c/$CONFIGURATOR_CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c/g' configure
-sed -i -e 's/-Wno-maybe-uninitialized/-Wno-uninitialized/g' configure
+sed -i 's/$CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c/$CONFIGURATOR_CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c/g' configure
+sed -i 's/-Wno-maybe-uninitialized/-Wno-uninitialized/g' configure
+./configure CONFIGURATOR_CC=${CONFIGURATOR_CC} --prefix=${LNBUILDROOT} --disable-developer --disable-compat --disable-valgrind --enable-static
+
+cp /repo/lightning-gen_header_versions.h gen_header_versions.h
+# update arch based on toolchain
+sed "s'NDKCOMPILER'${CC}'" /repo/lightning-config.vars > config.vars
+sed "s'NDKCOMPILER'${CC}'" /repo/lightning-config.h > ccan/config.h
+
+# patch makefile
+patch -p1 < /repo/lightning-makefile.patch
+patch -p1 < /repo/lightning-addr.patch
+patch -p1 < /repo/lightning-endian.patch
+
+# build external libraries and source
+make PIE=1 DEVELOPER=0 || echo "continue"
+make clean -C ccan/ccan/cdump/tools
+make LDFLAGS="" CC="${CONFIGURATOR_CC}" LDLIBS="-L/usr/local/lib" -C ccan/ccan/cdump/tools
+make PIE=1 DEVELOPER=0
+deactivate
+cd ..
+
+
+export CFLAGS="-flto"
+export LDFLAGS="$CFLAGS -pie -static-libstdc++ -fuse-ld=lld"
+# build core
+git clone $repo ${reponame}
+cd ${reponame}
+git checkout $commit
+patch -p1 < /repo/0001-android-patches.patch
 
 # run configure
 ./configure CONFIGURATOR_CC=/usr/bin/gcc --prefix=${QEMU_LD_PREFIX} --disable-developer --disable-compat --disable-valgrind --enable-static
