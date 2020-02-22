@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 7f49817de..e4e578fdb 100644
+index 7f49817d..a0484729 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -191,19 +191,19 @@ BOLT_DEPS := $(BOLT_GEN)
@@ -26,6 +26,15 @@ index 7f49817de..e4e578fdb 100644
  endif
  
  # If we have the postgres client library we need to link against it as well
+@@ -214,7 +214,7 @@ endif
+ default: all-programs all-test-programs doc-all
+ 
+ ccan/config.h: config.vars configure ccan/tools/configurator/configurator.c
+-	./configure --reconfigure
++	#./configure --reconfigure
+ 
+ config.vars:
+ 	@echo 'File config.vars not found: you must run ./configure before running make.' >&2
 @@ -386,7 +386,7 @@ gen_header_versions.h: tools/headerversions
  	@tools/headerversions $@
  
@@ -45,7 +54,7 @@ index 7f49817de..e4e578fdb 100644
  
  # Now ALL_PROGRAMS is fully populated, we can expand it.
 diff --git a/bitcoin/Makefile b/bitcoin/Makefile
-index 33dc5f7c2..90e67cdef 100644
+index 33dc5f7c..90e67cde 100644
 --- a/bitcoin/Makefile
 +++ b/bitcoin/Makefile
 @@ -54,4 +54,4 @@ clean: bitcoin-clean
