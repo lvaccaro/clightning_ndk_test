@@ -73,6 +73,7 @@ cp /repo/lightning-gen_header_versions.h gen_header_versions.h
 # update arch based on toolchain
 sed "s'NDKCOMPILER'${CC}'" /repo/lightning-config.vars > config.vars
 sed "s'NDKCOMPILER'${CC}'" /repo/lightning-config.h > ccan/config.h
+sed -i "s'LNBUILDROOT'${LNBUILDROOT}'" config.vars
 
 # Path the external deps build
 patch -p1 < /repo/lightning-makefile-external-reverts.patch
