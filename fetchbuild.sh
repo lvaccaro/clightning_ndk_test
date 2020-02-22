@@ -136,9 +136,16 @@ make PIE=1 DEVELOPER=0
 deactivate
 cd ..
 
-# pack binaries
-export repo_name="${HOST}-lightning"
-tar -C lightning/lightningd -cf ${repo_name}.tar lightning_channeld lightning_closingd lightning_connectd lightning_gossipd lightning_hsmd lightning_onchaind lightning_openingd lightningd
-tar -C lightning/ -rf ${repo_name}.tar plugins/autoclean plugins/fundchannel plugins/pay
-tar -C lightning/cli/ -rf ${repo_name}.tar lightning-cli
-xz ${repo_name}.tar
+# packaging
+if [ "${reponame}" != "${rename}" ]; then
+    mv ${reponame}/depends/${target_host/v7a/}/bin/${reponame}d ${reponame}/depends/${target_host/v7a/}/bin/${rename}d
+    mv ${reponame}/depends/${target_host/v7a/}/bin/${reponame}-cli ${reponame}/depends/${target_host/v7a/}/bin/${rename}-cli
+    outputtar=/repo/${target_host/v7a/}_${rename}.tar
+else
+    outputtar=/repo/${target_host/v7a/}_$(basename $(dirname ${repo})).tar
+fi
+tar -cf ${outputtar} -C ${reponame}/depends/${target_host/v7a/}/bin ${rename}d ${rename}-cli tor
+tar -rf ${outputtar} -C lightning/lightningd lightning_channeld lightning_closingd lightning_connectd lightning_gossipd lightning_hsmd lightning_onchaind lightning_openingd lightningd
+tar -rf ${outputtar} -C lightning plugins/autoclean plugins/fundchannel plugins/pay plugins/bcli
+tar -rf ${outputtar} -C lightning/cli lightning-cli
+xz ${outputtar}
