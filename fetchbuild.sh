@@ -100,6 +100,16 @@ make -j${num_jobs} 2> /dev/null
 make install_sw
 cd ..
 
+# build curl
+unpackdep http://curl.haxx.se/download/curl-7.37.1.tar.gz a32492a38c10a097344892f5fd2041e54698cb909696852311b1161e4aa979f3
+cd curl-7.37.1/
+CPPFLAGS="$CPPFLAGS -I${BUILDROOT}/openssl/include -I${BUILDROOT}/zlib/include"
+LDFLAGS="$LDFLAGS -L${BUILDROOT}/openssl/libs -L${BUILDROOT}/zlib/libs"
+./configure --prefix=${BUILDROOT} --target=${target_host} --host=${target_host} --with-ssl --with-zlib
+make -j ${num_jobs}
+make install
+cd ..
+
 # download lightning
 git clone $repo lightning
 cd lightning
