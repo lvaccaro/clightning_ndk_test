@@ -18,10 +18,8 @@ unpackdep() {
 }
 
 # build deps
-LNBUILDROOT=$PWD/build_root
-mkdir $LNBUILDROOT
-TORBUILDROOT=$PWD/tor_build_root
-mkdir $TORBUILDROOT
+BUILDROOT=$PWD/build_root
+mkdir $BUILDROOT
 
 export ANDROID_NDK_HOME=/opt/android-ndk-r20b
 export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:${PATH}
@@ -51,7 +49,7 @@ fi
 # build sqlite
 unpackdep https://www.sqlite.org/2018/sqlite-autoconf-3260000.tar.gz 5daa6a3fb7d1e8c767cd59c4ded8da6e4b00c61d3b466d0685e35c4dd6d7bf5d
 cd sqlite-autoconf-3260000
-./configure --enable-static --disable-readline --disable-threadsafe --host=${target_host} CC=$CC --prefix=${QEMU_LD_PREFIX}
+./configure --enable-static --disable-readline --disable-threadsafe --host=${target_host} CC=$CC --prefix=${BUILDROOT}
 make -j $num_jobs
 make install
 cd ..
@@ -61,7 +59,7 @@ rm -rf sqlite-autoconf-3260000.tar.gz
 # build gmp
 unpackdep https://gmplib.org/download/gmp/gmp-6.1.2.tar.bz2 5275bb04f4863a13516b2f39392ac5e272f5e1bb8057b18aec1c9b79d73d8fb2
 cd gmp-6.1.2
-./configure --enable-static --disable-assembly --host=${target_host} CC=$CC --prefix=${QEMU_LD_PREFIX}
+./configure --enable-static --disable-assembly --host=${target_host} CC=$CC --prefix=${BUILDROOT}
 make -j $num_jobs
 make install
 cd ..
@@ -72,7 +70,7 @@ rm -rf gmp-6.1.2.tar.bz2
 unpackdep https://github.com/libevent/libevent/archive/release-2.1.11-stable.tar.gz 229393ab2bf0dc94694f21836846b424f3532585bac3468738b7bf752c03901e
 cd libevent-release-2.1.11-stable
 ./autogen.sh
-./configure --prefix=$TORBUILDROOT/libevent --enable-static --disable-samples \
+./configure --prefix=${BUILDROOT}/libevent --enable-static --disable-samples \
             --disable-openssl --disable-shared --disable-libevent-regress --disable-debug-mode \
             --disable-dependency-tracking --host $target_host
 make -o configure install -j${num_jobs}
@@ -82,7 +80,7 @@ cd ..
 unpackdep https://github.com/madler/zlib/archive/v1.2.11.tar.gz 629380c90a77b964d896ed37163f5c3a34f6e6d897311f1df2a7016355c45eff
 cd zlib-1.2.11
 
-./configure --static --prefix=$TORBUILDROOT/zlib
+./configure --static --prefix=${BUILDROOT}/zlib
 make -o configure install -j${num_jobs}
 cd ..
 
@@ -96,7 +94,7 @@ SSLOPT="no-gost no-shared no-dso no-ssl3 no-idea no-hw no-dtls no-dtls1 \
 if [ "$bits" = "64" ]; then
     SSLOPT="$SSLOPT enable-ec_nistp_64_gcc_128"
 fi
-./Configure android-$NDKARCH --prefix=$TORBUILDROOT/openssl $SSLOPT
+./Configure android-$NDKARCH --prefix=${BUILDROOT}/openssl $SSLOPT
 make depend
 make -j${num_jobs} 2> /dev/null
 make install_sw
@@ -115,13 +113,13 @@ pip install -r requirements.txt
 # set standard cc for the configurator
 sed -i 's/$CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c/$CONFIGURATOR_CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c/g' configure
 sed -i 's/-Wno-maybe-uninitialized/-Wno-uninitialized/g' configure
-./configure CONFIGURATOR_CC=${CONFIGURATOR_CC} --prefix=${LNBUILDROOT} --disable-developer --disable-compat --disable-valgrind --enable-static
+./configure CONFIGURATOR_CC=${CONFIGURATOR_CC} --prefix=${BUILDROOT} --disable-developer --disable-compat --disable-valgrind --enable-static
 
 cp /repo/lightning-gen_header_versions.h gen_header_versions.h
 # update arch based on toolchain
 sed "s'NDKCOMPILER'${CC}'" /repo/lightning-config.vars > config.vars
 sed "s'NDKCOMPILER'${CC}'" /repo/lightning-config.h > ccan/config.h
-sed -i "s'LNBUILDROOT'${LNBUILDROOT}'" config.vars
+sed -i "s'BUILDROOT'${BUILDROOT}'" config.vars
 
 # Path the external deps build
 patch -p1 < /repo/lightning-makefile-external-reverts.patch
@@ -159,18 +157,18 @@ unpackdep https://github.com/torproject/tor/archive/tor-0.4.2.5.tar.gz 94ad248f4
 cd tor-tor-0.4.2.5
 ./autogen.sh
 TOROPT="--disable-system-torrc --disable-asciidoc --enable-static-tor --enable-static-openssl \
-        --with-zlib-dir=$TORBUILDROOT/zlib --disable-systemd --disable-zstd \
+        --with-zlib-dir=$BUILDROOT/zlib --disable-systemd --disable-zstd \
         --enable-static-libevent --enable-static-zlib --disable-system-torrc \
-        --with-openssl-dir=$TORBUILDROOT/openssl --disable-unittests \
-        --with-libevent-dir=$TORBUILDROOT/libevent --disable-lzma \
+        --with-openssl-dir=$BUILDROOT/openssl --disable-unittests \
+        --with-libevent-dir=$BUILDROOT/libevent --disable-lzma \
         --disable-tool-name-check --disable-rust \
         --disable-largefile ac_cv_c_bigendian=no \
         --disable-module-dirauth"
 
-./configure $TOROPT --prefix=$TORBUILDROOT/tor --host=$target_host --disable-android
+./configure $TOROPT --prefix=${BUILDROOT}/tor --host=$target_host --disable-android
 make -o configure install -j${num_jobs}
-$STRIP $TORBUILDROOT/tor/bin/tor
-mv $TORBUILDROOT/tor/bin/tor ../${reponame}/depends/${target_host/v7a/}/bin
+$STRIP $BUILDROOT/tor/bin/tor
+mv $BUILDROOT/tor/bin/tor ../${reponame}/depends/${target_host/v7a/}/bin
 cd ..
 
 # packaging
