@@ -105,7 +105,7 @@ unpackdep http://curl.haxx.se/download/curl-7.37.1.tar.gz a32492a38c10a097344892
 cd curl-7.37.1/
 CPPFLAGS="$CPPFLAGS -I${BUILDROOT}/openssl/include -I${BUILDROOT}/zlib/include"
 LDFLAGS="$LDFLAGS -L${BUILDROOT}/openssl/libs -L${BUILDROOT}/zlib/libs"
-./configure --prefix=${BUILDROOT} --target=${target_host} --host=${target_host} --with-ssl --with-zlib
+./configure --static --prefix=${BUILDROOT} --target=${target_host} --host=${target_host} --with-ssl --with-zlib
 make -j ${num_jobs}
 make install
 cd ..
