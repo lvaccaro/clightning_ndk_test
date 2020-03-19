@@ -101,8 +101,8 @@ make install_sw
 cd ..
 
 # build curl
-unpackdep http://curl.haxx.se/download/curl-7.37.1.tar.gz a32492a38c10a097344892f5fd2041e54698cb909696852311b1161e4aa979f3
-cd curl-7.37.1/
+unpackdep https://github.com/curl/curl/releases/download/curl-7_69_1/curl-7.69.1.tar.gz 01ae0c123dee45b01bbaef94c0bc00ed2aec89cb2ee0fd598e0d302a6b5e0a98
+cd curl-7.69.1/
 CPPFLAGS="$CPPFLAGS -I${BUILDROOT}/openssl/include -I${BUILDROOT}/zlib/include"
 LDFLAGS="$LDFLAGS -L${BUILDROOT}/openssl/libs -L${BUILDROOT}/zlib/libs"
 ./configure --enable-static --disable-shared --prefix=${BUILDROOT} --target=${target_host} --host=${target_host} --with-ssl --with-zlib
