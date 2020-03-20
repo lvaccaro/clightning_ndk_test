@@ -103,9 +103,7 @@ cd ..
 # build curl
 unpackdep https://github.com/curl/curl/releases/download/curl-7_69_1/curl-7.69.1.tar.gz 01ae0c123dee45b01bbaef94c0bc00ed2aec89cb2ee0fd598e0d302a6b5e0a98
 cd curl-7.69.1/
-CPPFLAGS="$CPPFLAGS -I${BUILDROOT}/include"
-LDFLAGS="$LDFLAGS -L${BUILDROOT}/libs"
-./configure --enable-static --disable-shared --prefix=${BUILDROOT} --target=${target_host} --host=${target_host} --with-ssl=${BUILDROOT} --with-zlib
+./configure --enable-static --disable-shared --prefix=${BUILDROOT} --target=${target_host} --host=${target_host} --with-ssl=${BUILDROOT} --with-zlib=${BUILDROOT}
 make -j ${num_jobs}
 make install
 cd ..
