@@ -70,7 +70,7 @@ rm -rf gmp-6.1.2.tar.bz2
 unpackdep https://github.com/libevent/libevent/archive/release-2.1.11-stable.tar.gz 229393ab2bf0dc94694f21836846b424f3532585bac3468738b7bf752c03901e
 cd libevent-release-2.1.11-stable
 ./autogen.sh
-./configure --prefix=${BUILDROOT}/libevent --enable-static --disable-samples \
+./configure --prefix=${BUILDROOT} --enable-static --disable-samples \
             --disable-openssl --disable-shared --disable-libevent-regress --disable-debug-mode \
             --disable-dependency-tracking --host $target_host
 make -o configure install -j${num_jobs}
@@ -80,7 +80,7 @@ cd ..
 unpackdep https://github.com/madler/zlib/archive/v1.2.11.tar.gz 629380c90a77b964d896ed37163f5c3a34f6e6d897311f1df2a7016355c45eff
 cd zlib-1.2.11
 
-./configure --static --prefix=${BUILDROOT}/zlib
+./configure --static --prefix=${BUILDROOT}
 make -o configure install -j${num_jobs}
 cd ..
 
@@ -94,7 +94,7 @@ SSLOPT="no-gost no-shared no-dso no-ssl3 no-idea no-hw no-dtls no-dtls1 \
 if [ "$bits" = "64" ]; then
     SSLOPT="$SSLOPT enable-ec_nistp_64_gcc_128"
 fi
-./Configure android-$NDKARCH --prefix=${BUILDROOT}/openssl $SSLOPT
+./Configure android-$NDKARCH --prefix=${BUILDROOT} $SSLOPT
 make depend
 make -j${num_jobs} 2> /dev/null
 make install_sw
@@ -103,9 +103,9 @@ cd ..
 # build curl
 unpackdep https://github.com/curl/curl/releases/download/curl-7_69_1/curl-7.69.1.tar.gz 01ae0c123dee45b01bbaef94c0bc00ed2aec89cb2ee0fd598e0d302a6b5e0a98
 cd curl-7.69.1/
-CPPFLAGS="$CPPFLAGS -I${BUILDROOT}/openssl/include -I${BUILDROOT}/zlib/include"
-LDFLAGS="$LDFLAGS -L${BUILDROOT}/openssl/libs -L${BUILDROOT}/zlib/libs"
-./configure --enable-static --disable-shared --prefix=${BUILDROOT} --target=${target_host} --host=${target_host} --with-ssl --with-zlib
+CPPFLAGS="$CPPFLAGS -I${BUILDROOT}/include"
+LDFLAGS="$LDFLAGS -L${BUILDROOT}/libs"
+./configure --enable-static --disable-shared --prefix=${BUILDROOT} --target=${target_host} --host=${target_host} --with-ssl=${BUILDROOT} --with-zlib
 make -j ${num_jobs}
 make install
 cd ..
@@ -175,18 +175,18 @@ unpackdep https://github.com/torproject/tor/archive/tor-0.4.2.5.tar.gz 94ad248f4
 cd tor-tor-0.4.2.5
 ./autogen.sh
 TOROPT="--disable-system-torrc --disable-asciidoc --enable-static-tor --enable-static-openssl \
-        --with-zlib-dir=$BUILDROOT/zlib --disable-systemd --disable-zstd \
+        --with-zlib-dir=$BUILDROOT --disable-systemd --disable-zstd \
         --enable-static-libevent --enable-static-zlib --disable-system-torrc \
-        --with-openssl-dir=$BUILDROOT/openssl --disable-unittests \
-        --with-libevent-dir=$BUILDROOT/libevent --disable-lzma \
+        --with-openssl-dir=$BUILDROOT --disable-unittests \
+        --with-libevent-dir=$BUILDROOT --disable-lzma \
         --disable-tool-name-check --disable-rust \
         --disable-largefile ac_cv_c_bigendian=no \
         --disable-module-dirauth"
 
-./configure $TOROPT --prefix=${BUILDROOT}/tor --host=$target_host --disable-android
+./configure $TOROPT --prefix=${BUILDROOT} --host=$target_host --disable-android
 make -o configure install -j${num_jobs}
-$STRIP $BUILDROOT/tor/bin/tor
-mv $BUILDROOT/tor/bin/tor ../${reponame}/depends/${target_host/v7a/}/bin
+$STRIP $BUILDROOT/bin/tor
+mv $BUILDROOT/bin/tor ../${reponame}/depends/${target_host/v7a/}/bin
 cd ..
 
 # packaging
