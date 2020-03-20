@@ -143,7 +143,7 @@ git clone https://github.com/lvaccaro/esplora_clnd_plugin.git
 cp esplora_clnd_plugin/esplora.c plugins/
 cp esplora_clnd_plugin/Makefile plugins/
 sed -i 's/PLUGINS=/PLUGINS=plugins\/esplora /g' Makefile
-sed -i 's/LDLIBS = /LDLIBS = -lcurl /g' Makefile
+sed -i 's/LDLIBS = /LDLIBS = -lcurl -lssl -lcrypto /g' Makefile
 
 # build external libraries and source
 make -j $num_jobs PIE=1 DEVELOPER=0 || echo "continue"
