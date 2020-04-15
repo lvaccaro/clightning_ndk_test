@@ -1,20 +1,8 @@
-commit 38963f43ca255fa60f7fa21700ca3c427f44bd92
-Author: darosior <darosior@protonmail.com>
-Date:   Mon Feb 17 17:28:18 2020 +0100
-
-    Revert modifications to external dependencies compilation
-    
-    Revert "external: Reorganize to support cross-compilation"
-    This reverts commit f9b3b96a63c1ced2034325fd0591cd7e74277426.
-    
-    Revert "Add cross-compilation options only when requested (#3275)"
-    This reverts commit 170918ff8c61ce2beb8bfdc0daae893a0f3981bf.
-
 diff --git a/Makefile b/Makefile
-index 7f49817de..725ca8043 100644
+index 3195140e..b68ab5f8 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -363,7 +363,7 @@ coverage: coverage/coverage.info
+@@ -369,7 +369,7 @@ coverage: coverage/coverage.info
  
  # We make libwallycore.la a dependency, so that it gets built normally, without ncc.
  # Ncc can't handle the libwally source code (yet).
@@ -24,7 +12,7 @@ index 7f49817de..725ca8043 100644
  
  # Ignore test/ directories.
 diff --git a/external/.gitignore b/external/.gitignore
-index cf0d3f9ef..5029d6105 100644
+index cf0d3f9e..5029d610 100644
 --- a/external/.gitignore
 +++ b/external/.gitignore
 @@ -5,5 +5,3 @@ libsodium.a
@@ -34,26 +22,22 @@ index cf0d3f9ef..5029d6105 100644
 -libwally-core-build
 -libsodium-build
 diff --git a/external/Makefile b/external/Makefile
-index ef7ca822d..697258120 100644
+index c5694bc0..9079ae37 100644
 --- a/external/Makefile
 +++ b/external/Makefile
-@@ -4,15 +4,6 @@ SUBMODULES =					\
- 	external/jsmn				\
- 	external/libbacktrace
+@@ -6,11 +6,6 @@ SUBMODULES =					\
  
--ifdef BUILD
--CROSSCOMPILE_OPTS := --host="$(MAKE_HOST)" --build="$(BUILD)"
+ ifdef BUILD
+ CROSSCOMPILE_OPTS := --host="$(MAKE_HOST)" --build="$(BUILD)"
 -TARGET_DIR := external/"$(MAKE_HOST)"
 -TOP := ../..
 -else
 -TARGET_DIR := external
 -TOP := ..
--endif
--
+ endif
+ 
  LIBSODIUM_HEADERS := external/libsodium/src/libsodium/include/sodium.h
- LIBWALLY_HEADERS := external/libwally-core/include/wally_bip32.h		\
- 			external/libwally-core/include/wally_core.h	\
-@@ -22,51 +13,45 @@ LIBSECP_HEADERS := external/libwally-core/src/secp256k1/include/secp256k1_ecdh.h
+@@ -22,56 +17,45 @@ LIBSECP_HEADERS := external/libwally-core/src/secp256k1/include/secp256k1_ecdh.h
  JSMN_HEADERS := external/jsmn/jsmn.h
  
  EXTERNAL_HEADERS := $(LIBSODIUM_HEADERS) $(LIBWALLY_HEADERS) $(LIBSECP_HEADERS) $(JSMN_HEADERS)
@@ -96,9 +80,9 @@ index ef7ca822d..697258120 100644
 -$(TARGET_DIR)/libsodium-build/src/libsodium/libsodium.la: external/libsodium/src/libsodium/include/sodium.h
 -	cd external/libsodium && ./autogen.sh
 -	mkdir -p ${TARGET_DIR}/libsodium-build
--	cd $(TARGET_DIR)/libsodium-build && $(TOP)/libsodium/configure CC="$(CC)" --enable-static=yes $(CROSSCOMPILE_OPTS) --enable-shared=no --enable-tests=no --prefix=/ --libdir=/ && $(MAKE)
+-	cd $(TARGET_DIR)/libsodium-build && $(TOP)/libsodium/configure CC="$(CC)" --enable-static=yes $(CROSSCOMPILE_OPTS) --enable-shared=no --prefix=/ --libdir=/ && $(MAKE)
 +external/libsodium/src/libsodium/libsodium.la: external/libsodium/src/libsodium/include/sodium.h
-+	cd external/libsodium && ./autogen.sh && ./configure CC="$(CC)" --enable-static=yes --host="$(MAKE_HOST)" --build="$(BUILD)" --enable-shared=no --enable-tests=no --prefix=/ --libdir=/ && $(MAKE)
++	cd external/libsodium && ./autogen.sh && ./configure CC="$(CC)" --enable-static=yes $(CROSSCOMPILE_OPTS) --enable-shared=no --enable-tests=no --prefix=/ --libdir=/ && $(MAKE)
  
  $(LIBWALLY_HEADERS) $(LIBSECP_HEADERS): submodcheck
  
@@ -106,19 +90,25 @@ index ef7ca822d..697258120 100644
  # Wildcards here are magic.  See http://stackoverflow.com/questions/2973445/gnu-makefile-rule-generating-a-few-targets-from-a-single-source-file
 -$(TARGET_DIR)/libsecp256k1.% $(TARGET_DIR)/libwallycore.%: $(TARGET_DIR)/libwally-core-build/src/secp256k1/libsecp256k1.la $(TARGET_DIR)/libwally-core-build/src/libwallycore.la
 -	$(MAKE) -C $(TARGET_DIR)/libwally-core-build DESTDIR=$$(pwd)/$(TARGET_DIR) install-exec
-+external/libsecp256k1.% external/libwallycore.%: external/libwally-core/src/secp256k1/libsecp256k1.la external/libwally-core/src/libwallycore.la
-+	$(MAKE) -C external/libwally-core DESTDIR=$$(pwd)/external install-exec
- 
+-
+-# Build libwally-core.
+-#
+-# PYTHON_VERSION is required to prevent configure from complaining about
+-# missing python2 binaries. These have been removed in newer distros and we
+-# shouldn't require them to be present either.
 -$(TARGET_DIR)/libwally-core-build/src/libwallycore.% $(TARGET_DIR)/libwally-core-build/src/secp256k1/libsecp256k1.%: $(LIBWALLY_HEADERS) $(LIBSECP_HEADERS)
 -	cd external/libwally-core && ./tools/autogen.sh
 -	mkdir -p ${TARGET_DIR}/libwally-core-build
--	cd ${TARGET_DIR}/libwally-core-build && ${TOP}/libwally-core/configure CC="$(CC)" --enable-static=yes $(CROSSCOMPILE_OPTS) --enable-module-recovery --enable-elements --enable-shared=no --prefix=/ --libdir=/ --enable-debug && $(MAKE)
+-	cd ${TARGET_DIR}/libwally-core-build && PYTHON_VERSION=3 CFLAGS=-std=c99 ${TOP}/libwally-core/configure CC="$(CC)" --enable-static=yes $(CROSSCOMPILE_OPTS) --enable-module-recovery --enable-elements --enable-shared=no --prefix=/ --libdir=/ --enable-debug && $(MAKE)
++external/libsecp256k1.% external/libwallycore.%: external/libwally-core/src/secp256k1/libsecp256k1.la external/libwally-core/src/libwallycore.la
++	$(MAKE) -C external/libwally-core DESTDIR=$$(pwd)/external install-exec
++
 +external/libwally-core/src/libwallycore.% external/libwally-core/src/secp256k1/libsecp256k1.%: $(LIBWALLY_HEADERS) $(LIBSECP_HEADERS)
-+	cd external/libwally-core && ./tools/autogen.sh && ./configure CC="$(CC)" --enable-static=yes --host="$(MAKE_HOST)" --build="$(BUILD)" --enable-module-recovery --enable-elements --enable-shared=no --prefix=/ --libdir=/ --enable-debug && $(MAKE)
++	cd external/libwally-core && ./tools/autogen.sh && ./configure CC="$(CC)" --enable-static=yes $(CROSSCOMPILE_OPTS) --enable-module-recovery --enable-elements --enable-shared=no --prefix=/ --libdir=/ --enable-debug && $(MAKE)
  
  external/jsmn/jsmn.h: submodcheck
  
-@@ -75,33 +60,32 @@ external/jsmn/jsmn.h: submodcheck
+@@ -80,33 +64,32 @@ external/jsmn/jsmn.h: submodcheck
  external/jsmn/jsmn.c: external/jsmn/jsmn.h
  	[ -f $@ ]
  
@@ -141,7 +131,7 @@ index ef7ca822d..697258120 100644
 -	$(MAKE) -C $(TARGET_DIR)/libbacktrace-build DESTDIR=$$(pwd)/$(TARGET_DIR) install-exec
 +external/libbacktrace.a: external/libbacktrace/backtrace.h
 +	@mkdir external/libbacktrace-build 2>/dev/null || true
-+	cd external/libbacktrace-build && ../libbacktrace/configure CC="$(CC)" --enable-static=yes --host="$(MAKE_HOST)" --build="$(BUILD)" --enable-shared=no --prefix=/ --libdir=/ && $(MAKE)
++	cd external/libbacktrace-build && ../libbacktrace/configure CC="$(CC)" --enable-static=yes $(CROSSCOMPILE_OPTS) --enable-shared=no --prefix=/ --libdir=/ && $(MAKE)
 +	$(MAKE) -C external/libbacktrace-build DESTDIR=$$(pwd)/external install-exec
  
  distclean: external-distclean
