@@ -148,7 +148,12 @@ sed -i "s'BUILDROOT'${BUILDROOT}'" config.vars
 # Path the external deps build
 patch -p1 < /repo/lightning-makefile-external-reverts.patch
 # patch makefile
-patch -p1 < /repo/lightning-makefile.patch
+
+sed -i "s'/usr/local'${BUILDROOT}'" Makefile
+sed -i "s'-lpthread''" Makefile
+sed -i "s'ALL_GEN_HEADERS += gen_header_versions.h''" Makefile
+sed -i "s'./configure'#./configure'" Makefile
+sed -i "s'include bitcoin/test/Makefile''" bitcoin/Makefile
 patch -p1 < /repo/lightning-addr.patch
 patch -p1 < /repo/lightning-endian.patch
 
