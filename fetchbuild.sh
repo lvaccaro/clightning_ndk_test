@@ -145,8 +145,12 @@ sed "s'NDKCOMPILER'${CC}'" /repo/lightning-config.vars > config.vars
 sed "s'NDKCOMPILER'${CC}'" /repo/lightning-config.h > ccan/config.h
 sed -i "s'BUILDROOT'${BUILDROOT}'" config.vars
 
-# Path the external deps build
-patch -p1 < /repo/lightning-makefile-external-reverts.patch
+# Path the external deps Makefile to mark as up to date
+sed -i "s'TARGET_DIR :='#TARGET_DIR :='" external/Makefile
+sed -i "s'TOP :='#TOP :='" external/Makefile
+export TARGET_DIR=external/${MAKE_HOST}
+export TOP=../..
+
 # patch makefile
 
 sed -i "s'/usr/local'${BUILDROOT}'" Makefile
