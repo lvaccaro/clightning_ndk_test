@@ -169,10 +169,10 @@ sed -i 's/PLUGINS=/PLUGINS=plugins\/esplora /g' Makefile
 sed -i 's/LDLIBS = /LDLIBS = -lcurl -lssl -lcrypto /g' Makefile
 
 # build external libraries and source
-make -j $num_jobs PIE=1 DEVELOPER=0 || echo "continue"
+make PIE=1 DEVELOPER=0 || echo "continue"
 make clean -C ccan/ccan/cdump/tools
 make -j $num_jobs LDFLAGS="" CC="${CONFIGURATOR_CC}" LDLIBS="-L/usr/local/lib" -C ccan/ccan/cdump/tools
-make -j $num_jobs PIE=1 DEVELOPER=0
+make PIE=1 DEVELOPER=0
 deactivate
 cd ..
 
