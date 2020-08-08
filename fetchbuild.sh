@@ -21,6 +21,7 @@ unpackdep() {
 BUILDROOT=$PWD/build_root
 mkdir -p $BUILDROOT
 
+export NDK_VERSION=android-ndk-r21d
 export ANDROID_NDK_HOME=/opt/$NDK_VERSION
 export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:${PATH}
 export AR=${target_host/v7a}-ar
