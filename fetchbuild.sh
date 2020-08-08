@@ -157,9 +157,8 @@ patch -p1 < /repo/lightning-endian.patch
 # add esplora plugin
 git clone https://github.com/lvaccaro/esplora_clnd_plugin.git
 cp esplora_clnd_plugin/esplora.c plugins/
-cp esplora_clnd_plugin/Makefile plugins/
-sed -i 's/PLUGINS=/PLUGINS=plugins\/esplora /g' Makefile
 sed -i 's/LDLIBS = /LDLIBS = -lcurl -lssl -lcrypto /g' Makefile
+patch -p1 < esplora_clnd_plugin/Makefile.patch
 
 # build external libraries and source
 make PIE=1 DEVELOPER=0 || echo "continue"
