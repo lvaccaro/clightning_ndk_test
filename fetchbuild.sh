@@ -128,7 +128,7 @@ fi
 # download lightning
 git clone $repo lightning
 cd lightning
-git checkout v0.9.0
+git checkout v0.9.1
 
 # set virtualenv
 python3 -m virtualenv venv
