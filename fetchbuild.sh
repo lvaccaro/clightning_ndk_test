@@ -149,7 +149,7 @@ sed -i "s'BUILDROOT'${BUILDROOT}'" config.vars
 # patch makefile
 sed -i "s'/usr/local'${BUILDROOT}'" Makefile
 sed -i "s'-lpthread''" Makefile
-sed -i "s'ALL_GEN_HEADERS += gen_header_versions.h''" Makefile
+sed -i "s'ALL_C_HEADERS := gen_header_versions.h'ALL_C_HEADERS :='" Makefile
 sed -i "s'./configure'#./configure'" Makefile
 sed -i "s'include bitcoin/test/Makefile''" bitcoin/Makefile
 patch -p1 < /repo/lightning-addr.patch
