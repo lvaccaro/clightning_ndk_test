@@ -216,6 +216,6 @@ else
 fi
 tar -cf ${outputtar} -C ${reponame}/depends/${target_host/v7a/}/bin ${rename}d ${rename}-cli tor
 tar -rf ${outputtar} -C lightning/lightningd lightning_channeld lightning_closingd lightning_connectd lightning_gossipd lightning_hsmd lightning_onchaind lightning_openingd lightningd
-tar -rf ${outputtar} -C lightning plugins/autoclean plugins/fundchannel plugins/pay plugins/bcli plugins/esplora
+tar -rf ${outputtar} -C lightning plugins/autoclean plugins/keysend plugins/pay plugins/bcli plugins/esplora plugins/txprepare plugins/pay plugins/spenderp
 tar -rf ${outputtar} -C lightning/cli lightning-cli
 xz ${outputtar}
