@@ -128,19 +128,16 @@ fi
 # download lightning
 git clone $repo lightning
 cd lightning
-git checkout v0.9.1
+git checkout v0.9.2
 
 # set virtualenv
 python3 -m virtualenv venv
 . venv/bin/activate
 pip install -r requirements.txt
 
-# set standard cc for the configurator
-sed -i 's/$CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c/$CONFIGURATOR_CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c/g' configure
-sed -i 's/-Wno-maybe-uninitialized/-Wno-uninitialized/g' configure
-./configure CONFIGURATOR_CC=${CONFIGURATOR_CC} --prefix=${BUILDROOT} --disable-developer --disable-compat --disable-valgrind --enable-static
-
-cp /repo/lightning-gen_header_versions.h gen_header_versions.h
+# provide generated config file instead run configure
+cp /repo/lightning-header_versions_gen.h header_versions_gen.h
+cp /repo/lightning-version_gen.h version_gen.h
 # update arch based on toolchain
 sed "s'NDKCOMPILER'${CC}'" /repo/lightning-config.vars > config.vars
 sed "s'NDKCOMPILER'${CC}'" /repo/lightning-config.h > ccan/config.h
@@ -149,7 +146,7 @@ sed -i "s'BUILDROOT'${BUILDROOT}'" config.vars
 # patch makefile
 sed -i "s'/usr/local'${BUILDROOT}'" Makefile
 sed -i "s'-lpthread''" Makefile
-sed -i "s'ALL_C_HEADERS := gen_header_versions.h'ALL_C_HEADERS :='" Makefile
+sed -i "s'ALL_C_HEADERS := header_versions_gen.h version_gen.h'ALL_C_HEADERS :='" Makefile
 sed -i "s'./configure'#./configure'" Makefile
 sed -i "s'include bitcoin/test/Makefile''" bitcoin/Makefile
 patch -p1 < /repo/lightning-addr.patch
@@ -157,9 +154,9 @@ patch -p1 < /repo/lightning-endian.patch
 
 # add esplora plugin
 git clone https://github.com/lvaccaro/esplora_clnd_plugin.git
-cd esplora_clnd_plugin && git checkout v0.1 && cd ..
+cd esplora_clnd_plugin && git checkout master && cd ..
 cp esplora_clnd_plugin/esplora.c plugins/
-sed -i 's/LDLIBS = /LDLIBS = -lsqlite3 -lcurl -lssl -lcrypto /g' Makefile
+sed -i 's/LDLIBS = /LDLIBS = -lcurl -lssl -lcrypto /g' Makefile
 patch -p1 < esplora_clnd_plugin/Makefile.patch
 
 # build external libraries and source
@@ -215,7 +212,7 @@ else
     outputtar=/repo/${target_host/v7a/}_$(basename $(dirname ${repo})).tar
 fi
 tar -cf ${outputtar} -C ${reponame}/depends/${target_host/v7a/}/bin ${rename}d ${rename}-cli tor
-tar -rf ${outputtar} -C lightning/lightningd lightning_channeld lightning_closingd lightning_connectd lightning_gossipd lightning_hsmd lightning_onchaind lightning_openingd lightningd
-tar -rf ${outputtar} -C lightning plugins/autoclean plugins/keysend plugins/pay plugins/bcli plugins/esplora plugins/txprepare plugins/pay plugins/spenderp
-tar -rf ${outputtar} -C lightning/cli lightning-cli
+tar -rf ${outputtar} -C lightning lightningd/lightning_channeld lightningd/lightning_closingd lightningd/lightning_connectd lightningd/lightning_gossipd lightningd/lightning_hsmd lightningd/lightning_onchaind lightningd/lightning_openingd lightningd/lightningd
+tar -rf ${outputtar} -C lightning plugins/autoclean plugins/keysend plugins/bcli plugins/esplora plugins/txprepare plugins/pay plugins/spenderp
+tar -rf ${outputtar} -C lightning cli/lightning-cli
 xz ${outputtar}
